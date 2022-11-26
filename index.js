@@ -27,6 +27,15 @@ app.get('/api/courses',(req,res) => {
 
 });
 
+app.post('/api/courses',(req,res) => {
+
+    const course = {
+        id:courses.length + 1,
+        name:req.body.name
+    };
+
+});
+
 const port = process.env.PORT || 3000;
 
 app.listen(port,() => console.log(`Listening on port ${port}...`));
