@@ -1,7 +1,11 @@
 const { application } = require('express');
 const express = require('express');
 
+
 const app =  express();
+
+
+app.use(express.json());
 
 const courses = [
     {id:1,name:'course1'},
@@ -34,11 +38,17 @@ app.post('/api/courses',(req,res) => {
         name:req.body.name
     };
 
+    courses.push(course);
+    res.send(course);
+
 });
 
 const port = process.env.PORT || 3000;
 
 app.listen(port,() => console.log(`Listening on port ${port}...`));
+
+
+
 
 // app.post()
 // app.put()
