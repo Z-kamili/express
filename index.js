@@ -7,8 +7,8 @@ const logger = require('./logger');
 const app =  express();
 
 //Middlleware
-app.use(express.json()); // req.body
-
+app.use(express.json()); 
+app.use(express.urlencoded());// key = value & key = value
 app.use(logger);
 
 //Middlleware
