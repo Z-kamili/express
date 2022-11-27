@@ -1,17 +1,31 @@
+const helmet =  require('helmet');
+const morgan =  require('morgan');
 const Joi = require('joi');
 const { application } = require('express');
 const express = require('express');
 const logger = require('./logger');
-
-
 const app =  express();
+
+
+
+// console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+
 
 //Middlleware
 app.use(express.json()); 
 app.use(express.urlencoded({ extended:true }));// key = value & key = value
 app.use(express.static('public'));
+app.use(helmet());
+
+if(app.get('env') === 'development') {
+
+    app.use(morgan('tiny'));
+    console.log('Morgan enabled...');
+
+}
 
 app.use(logger);
+
 
 
 
