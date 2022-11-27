@@ -8,8 +8,12 @@ const app =  express();
 
 //Middlleware
 app.use(express.json()); 
-app.use(express.urlencoded());// key = value & key = value
+app.use(express.urlencoded({ extended:true }));// key = value & key = value
+app.use(express.static('public'));
+
 app.use(logger);
+
+
 
 //Middlleware
 app.use(function(req,res,next) {
@@ -18,8 +22,6 @@ app.use(function(req,res,next) {
     next();
 
 });
-
-
 
 const courses = [
     {id:1,name:'course1'},
