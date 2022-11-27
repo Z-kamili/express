@@ -5,8 +5,25 @@ const express = require('express');
 
 const app =  express();
 
+//Middlleware
+app.use(express.json()); // req.body
 
-app.use(express.json());
+app.use(function(req,res,next) {
+
+    console.log('Logging...');
+    next();
+
+});
+
+//Middlleware
+app.use(function(req,res,next) {
+
+    console.log('Authenticating...');
+    next();
+
+});
+
+
 
 const courses = [
     {id:1,name:'course1'},
@@ -39,10 +56,12 @@ app.post('/api/courses',(req,res) => {
 
     if(error) return  res.status(400).send(result.error.details[0].message);
 
-    const course = {
-        id:courses.length + 1,
-        name:req.body.name
-    };
+const course = {
+    
+    id:courses.length + 1,
+    name:req.body.name
+
+};
 
     courses.push(course);
 
