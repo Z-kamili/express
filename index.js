@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const { application } = require('express');
 const express = require('express');
+const logger = require('./logger');
 
 
 const app =  express();
@@ -8,12 +9,7 @@ const app =  express();
 //Middlleware
 app.use(express.json()); // req.body
 
-app.use(function(req,res,next) {
-
-    console.log('Logging...');
-    next();
-
-});
+app.use(logger);
 
 //Middlleware
 app.use(function(req,res,next) {
