@@ -9,6 +9,7 @@ const express = require('express');
 const logger = require('./logger');
 const app =  express();
 
+//configuration 
 app.set('view engine','pug');
 app.set('views','./views'); //default
 
@@ -56,7 +57,7 @@ const courses = [
 ];
 
 app.get('/',(req,res) => {
-    res.send('Hello World!!!');
+    res.render('index',{title:'My Express App',message:'Hello'});
 });
 
 app.get('/api/courses/:id',(req,res) => {
