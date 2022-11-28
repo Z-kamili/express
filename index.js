@@ -1,3 +1,5 @@
+const startupDebugger =  require('debug')('app:startup');
+const dbDebugger =  require('debug')('app:db');
 const config = require('config');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -6,6 +8,9 @@ const { application } = require('express');
 const express = require('express');
 const logger = require('./logger');
 const app =  express();
+
+app.set('view engine','pug');
+app.set('views','./views'); //default
 
 
 
@@ -24,11 +29,12 @@ console.log('Mail Server: ' + config.get('mail.host'));
 
 
 if(app.get('env') === 'development') {
-
     app.use(morgan('tiny'));
-    console.log('Morgan enabled...');
-
+    startupDebugger('Morgan enabled...');
 }
+
+// Db work...
+dbDebugger('Connected to the database...');
 
 app.use(logger);
 
