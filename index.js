@@ -9,13 +9,66 @@ const express = require('express');
 const logger = require('./logger');
 const app =  express();
 const mongoose = require('mongoose');
-
 let url = 'mongodb://127.0.0.1/playground';
 
-//connexion via mongoo 
+//connexion to mongoDB
 mongoose.connect(url)
         .then(() => console.log('connected to MongoDB...'))
         .catch(err => console.log('Could not connect to MongoDB...',err));
+
+
+
+
+
+
+// schema 
+
+const courseShema = new mongoose.Schema({
+
+     name : {
+        type:String,
+        required:true,
+        minlength:5,
+        maxlength:5
+     },
+     category : {
+       type:String,
+       required:true,
+       enum:['web','mobile','network'],
+       lowercase:true,
+       //upercase : true,
+       trim:true,
+     },
+     author:String,
+     tags : {
+        type:Array,
+        validate : {
+            isAsync : true,
+            validator : function(v,callback) {
+                 setTimeout(() => {
+                  // Do some async work.
+                  const result = v && v.length > 0;
+                 },4000);
+            },
+            message: 'A course should have at least one tag.'
+        },
+     },
+     date:{type:Date,default:Date.now},
+     isPublished:Boolean,
+     price : {
+        type:Number,
+        required : () => {return this.isPublished;},
+        min : 10,
+        max : 200,
+        get: v => Math.round(v),
+        set: v => Math.round(v)
+     },
+});
+
+   //Classes,objects
+   //Course,nodeCourse
+
+const Course = mongoose.model('Course',courseShema);
 
 //configuration 
 app.set('view engine','pug');
