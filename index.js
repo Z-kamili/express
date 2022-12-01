@@ -143,9 +143,12 @@ async function createCourse(params) {
                 console.log(ex.errors[field]);
      }
 
+}
 
-     
-
+async function getCourses() 
+{
+    const courses = await Course.find();
+    return courses;
 }
 
 app.get('/',(req,res) => {
