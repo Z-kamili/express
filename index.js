@@ -117,6 +117,37 @@ const courses = [
     {id:3,name:'course3'},
 ];
 
+
+//create courses 
+
+async function createCourse(params) {
+
+     const course = new Course({
+        name: params.body.name,
+        category: params.body.category,
+        author:params.body.author,
+        tags:['backend','frontend'],
+        isPublished:true
+     });
+
+     try 
+     {
+
+         const result = await course.save();
+         console.log(result);
+
+     }
+     catch (ex) 
+     {
+         for(field in ex.errors) 
+                console.log(ex.errors[field]);
+     }
+
+
+     
+
+}
+
 app.get('/',(req,res) => {
     res.render('index',{title:'My Express App',message:'Hello'});
 });
