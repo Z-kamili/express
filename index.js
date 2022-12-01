@@ -8,6 +8,14 @@ const { application } = require('express');
 const express = require('express');
 const logger = require('./logger');
 const app =  express();
+const mongoose = require('mongoose');
+
+let url = 'mongodb://127.0.0.1/playground';
+
+//connexion via mongoo 
+mongoose.connect(url)
+        .then(() => console.log('connected to MongoDB...'))
+        .catch(err => console.log('Could not connect to MongoDB...',err));
 
 //configuration 
 app.set('view engine','pug');
