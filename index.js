@@ -81,7 +81,7 @@ app.set('views','./views'); //default
 
 //Middlleware
 app.use(express.json()); 
-app.use(express.urlencoded({ extended:true }));// key = value & key = value
+app.use(express.urlencoded({ extended:true })); // key = value & key = value
 app.use(express.static('public'));
 app.use(helmet());
 
