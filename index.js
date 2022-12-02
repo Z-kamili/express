@@ -26,46 +26,40 @@ const courseShema = new mongoose.Schema({
        minlength:5,
        maxlength:255
     },
-    category : {
-      type:String,
-      required:true,
-      enum:['web','mobile','network'],
-      lowercase:true,
-      trim:true,
-    },
-    author:String,
-    tags:{
-        type:Array,
-        validate: {
-           isAsync : true,
-           validator : function(v,callback) {
-             setTimeout(() => {
-             const result = v && v.length > 0;
-             }, 4000);
-           },
-           message: 'A course should have at least one tag.'
-        },
-    },
-    date:{type:Date,default:Date.now},
-    isPublished:Boolean,
-    price : {
-       type : Number,
-       required : () =>  { return this.isPublished; },
-       min : 10,
-       max : 200,
-       get: v => Math.round(v),
-       set: v => Math.round(v)
-    },
- });
-
+    // category : {
+    //   type:String,
+    //   required:true,
+    //   enum:['web','mobile','network'],
+    //   lowercase:true,
+    //   trim:true,
+    // },
+    // author:String,
+    // tags:{
+    //     type:Array,
+    //     validate: {
+    //        isAsync : true,
+    //        validator : function(v,callback) {
+    //          setTimeout(() => {
+    //          const result = v && v.length > 0;
+    //          }, 4000);
+    //        },
+    //        message: 'A course should have at least one tag.'
+    //     },
+    // },
+    // date:{type:Date,default:Date.now},
+    // isPublished:Boolean,
+    // price : {
+    //    type : Number,
+    //    required : () =>  { return this.isPublished; },
+    //    min : 10,
+    //    max : 200,
+    //    get: v => Math.round(v),
+    //    set: v => Math.round(v)
+    // },
+});
 
 
 const Course = mongoose.model('Course',courseShema);
-
-
-
-
-
 
 
 //configuration 
@@ -122,25 +116,21 @@ async function createCourse(params) {
 
      const course = new Course({
         name: params.body.name,
-        category: params.body.category,
-        author:params.body.author,
+        // category: params.body.category,
+        // author:params.body.author,
         tags:['backend','frontend'],
         isPublished:true
      });
 
      try 
      {
-
          const result = await course.save();
          return result;
-
      }
      catch (ex) 
      {
-
          for(field in ex.errors) 
                 console.log(ex.errors[field]);
-
      }
 
 }
@@ -148,6 +138,11 @@ async function createCourse(params) {
 async function getCourses() {
     const courses = await Course.find();
        return courses;
+}
+
+async function getCoursesById(params) {
+    const courses = await Course.find({id:params});
+    return courses;
 }
 
 // getCourses();
@@ -186,9 +181,9 @@ app.get('/',async (req,res) => {
       res.send(courses);
 });
 
-app.get('/api/courses/:id',(req,res) => {
+app.get('/api/courses/:id',async (req,res) => {
 
- const  course = courses.find(c => c.id === parseInt(req.params.id));
+ const course = await getCoursesById(req.params.id);
  if(!course) return res.status(404).send('The course with the given ID was not found');
  res.send(course);
 
@@ -200,54 +195,43 @@ app.get('/api/courses',(req,res) => {
 
 });
 
-// app.post('/api/courses',(req,res) => {
+app.post('/api/courses',async (req,res) => {
 
-//     const result = ValidateCourse(req.body);
-//     const {error} = ValidateCourse(req.body);
+    const {error} = ValidateCourse(req.body);
 
-//     if(error) return  res.status(400).send(result.error.details[0].message);
+    if(error) return res.status(400).send(error.details[0].message);
 
-// const course = {
-    
-//     id:courses.length + 1,
-//     name:req.body.name
+    let course =  await createCourse(req);
 
-// };
+    res.send(course);
 
-//     courses.push(course);
+});
 
-//     res.send(course);
-
-// });
-
-app.put('/api/courses/:id',(req,res) => {
+app.put('/api/courses/:id',async (req,res) => {
 
     // Look up the course
     // If not existing, return 404
 
-    const  course = courses.find(c => c.id === parseInt(req.params.id));
-    if(!course) return res.status(404).send('The course with the given ID was not found');
-
-    // Validate
-    // If invalid, return 400 - Bad request
-
-    const result = ValidateCourse(req.body);
     const {error} = ValidateCourse(req.body);
 
-    if(error) return res.status(400).send(result.error.details[0].message);
+    if(error) return res.status(400).send(error.details[0].message);
+    
+    const course = await Course.findByIdAndUpdate(req.params.id,{name:req.body.name},{
+        new : true
+    });
 
-    course.name = req.body.name;
+    if(!course) return res.status(404).send('error in update courses');
+
     res.send(course);
-    //Return the updated course
 
+    //Return the updated course
 
 });
 
+
+
 app.delete('/api/courses/:id',(req,res) => {
 
-    //Look up the course
-    //Not existing, return 404
-    
     const  course = courses.find(c => c.id === parseInt(req.params.id));
     if(!course) return res.status(404).send('The course with the given ID was not found');
 
@@ -260,7 +244,11 @@ app.delete('/api/courses/:id',(req,res) => {
 
 });
 
-function ValidateCourse(course) {
+
+
+
+function ValidateCourse(course) 
+{
 
     //validation
     const schema = {
